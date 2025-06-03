@@ -228,3 +228,22 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Made with ❤️ for movie lovers everywhere**
+
+## 🏃‍♂️ Quickstart
+
+This repository now includes a minimal prototype server and simple frontend.
+
+### Install dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### Run the server
+
+```bash
+node server.js
+```
+
+The server will start on port `3001` and serve the frontend from the `frontend` folder. Open `http://localhost:3001` in your browser to try the search interface.

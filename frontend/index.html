@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MovieStream Finder</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+    input { width: 400px; padding: 10px; font-size: 18px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { cursor: pointer; padding: 5px; }
+    li:hover { background-color: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h1>MovieStream Finder</h1>
+  <input id="search" placeholder="Search movie..." autocomplete="off" />
+  <ul id="suggestions"></ul>
+  <div id="results"></div>
+<script>
+const searchInput = document.getElementById('search');
+const suggestions = document.getElementById('suggestions');
+const resultsDiv = document.getElementById('results');
+let timer;
+searchInput.addEventListener('input', () => {
+  clearTimeout(timer);
+  const q = searchInput.value.trim();
+  if (!q) { suggestions.innerHTML = ''; return; }
+  timer = setTimeout(() => fetch(`/api/search?q=${encodeURIComponent(q)}`)
+    .then(res => res.json())
+    .then(data => {
+      suggestions.innerHTML = '';
+      data.movies.forEach(m => {
+        const li = document.createElement('li');
+        li.textContent = `${m.title} (${m.year})`;
+        li.onclick = () => showResults(m);
+        suggestions.appendChild(li);
+      });
+    }), 300);
+});
+function showResults(movie) {
+  suggestions.innerHTML = '';
+  searchInput.value = `${movie.title} (${movie.year})`;
+  resultsDiv.innerHTML = `<h2>${movie.title} (${movie.year})</h2>`;
+  if (!movie.offers.length) {
+    resultsDiv.innerHTML += '<p>No streaming information.</p>';
+  } else {
+    const list = document.createElement('ul');
+    movie.offers.forEach(o => {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="${o.url}" target="_blank">Provider ${o.provider_id} - ${o.monetization_type}</a>`;
+      list.appendChild(li);
+    });
+    resultsDiv.appendChild(list);
+  }
+}
+</script>
+</body>
+</html>
